@@ -1,0 +1,554 @@
+import React, { useState } from "react";
+import { Editor } from "@tinymce/tinymce-react";
+import styles from "./styles.css";
+import PatientInformation from "../PatientInformation/PatientInformation";
+import CustomerInformation from "../CustomerInformation/CustomerInformation";
+import { For } from "react-for";
+import {
+  Row,
+  Col,
+  Card,
+  CardBody,
+  Form,
+  FormGroup,
+  FormInput,
+  Button,
+  CardHeader,
+  CardFooter,
+  MyTable,
+  ModalComponent,
+  SelectInput,
+} from "../../../components";
+import MuiButton from "../../../components/MuiButton/MuiButton";
+import axios from "axios";
+import { useForm } from "react-hook-form";
+
+const ExaminationReport = () => {
+  const [area, setArea] = useState("");
+  const [modal1, setModal1] = useState(false);
+  const [modal3, setModal3] = useState(false);
+  const [file, setFile] = useState();
+  const [signed, setSigned] = useState(0);
+  const toggle1 = () => setModal1(!modal1);
+  const toggle3 = () => setModal3(!modal3);
+  const { handleSubmit, reset, errors, register, clearErrors } = useForm({
+    mode: "onBlur",
+  });
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [transcript11, setTranscript] = useState([]);
+
+  const selectFiles = (event) => {
+    const length = event.target.files.length;
+    alert(length);
+    setSelectedFiles((selectedFiles) => [
+      ...selectedFiles,
+      event.target.files[0],
+    ]);
+    setFile(1);
+    console.log(selectedFiles);
+    alert(selectedFiles.length);
+  };
+
+  const deleteFiles = (name) => {
+    alert("--->" + name);
+    setSelectedFiles(selectedFiles.filter((item) => item.name !== name));
+  };
+
+  const ClearAll = () => {
+    setSelectedFiles([]);
+  };
+
+  const UploadImage = () => {
+    const formData = new FormData();
+    for (var i = 0; i < selectedFiles.length; i++)
+      formData.append("file", selectedFiles[i]);
+    axios({
+      method: "post",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      data: formData,
+      url: "http://localhost:8080/upload",
+    })
+      .then((resp) => {
+        alert("success===--->" + resp.data);
+        setSelectedFiles([]);
+      })
+      .catch((err) => {
+        alert("Not success");
+        console.error(err);
+      });
+  };
+
+  const GetTranscriptions = () => {
+    const formData = new FormData();
+    for (var i = 0; i < selectedFiles.length; i++)
+      formData.append("file", selectedFiles[i]);
+    axios({
+      method: "get",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      data: formData,
+      url: "http://localhost:8080/files",
+    })
+      .then((resp) => {
+        alert("success===--->" + resp.data.name);
+        setTranscript(resp.data);
+      })
+      .catch((err) => {
+        alert("Not success");
+        console.error(err);
+      });
+  };
+
+  const handleChange1 = (event) => {
+    // alert(event.target.value);
+    setArea(event.target.value);
+    //  alert("Hi");
+  };
+
+  var reportoutcome = [
+    { id: "1", name: "None" },
+    { id: "2", name: "Abnormal" },
+    { id: "3", name: "Normal" },
+  ];
+
+  const radiologist = [
+    { id: "1", name: "Select Radiologist" },
+    { id: "2", name: "DR.Elangovan" },
+    { id: "3", name: "DR.Sathish" },
+    { id: "4", name: "DR.Sameer" },
+    { id: "5", name: "DR.Jaffer" },
+    { id: "6", name: "DR.Yasar" },
+    { id: "7", name: "DR.Wahith" },
+  ];
+
+  const transcript = [
+    { id: "1", name: "Yes" },
+    { id: "2", name: "No" },
+  ];
+
+  const signedReport = () => {
+    setSigned(1);
+  };
+
+  return (
+    <Card style={{ color: "black" }} className="mt-n3 mx-n3">
+      <CardBody className="mx-md-n2 my-md-n2">
+        <Row>
+          <Col lg={8}>
+            <Row className="mb-1">
+              <Col lg={6}>
+                <FormGroup row className="mb-1">
+                  <Col sm={4}>Reg.ID:</Col>
+                  <Col sm={8}>
+                    <span>
+                      <b>PG2009323</b>
+                    </span>
+                  </Col>
+                </FormGroup>
+                <FormGroup row className="mb-1">
+                  <Col sm={4}>Patient Name:</Col>
+                  <Col sm={8}>
+                    <span onClick={toggle3}>
+                      <b>
+                        <u>ABDUL MANAM B ISMAIL</u>
+                      </b>
+                    </span>
+                  </Col>
+                </FormGroup>
+                <FormGroup row className="mb-1">
+                  <Col sm={4}>Ref/Rev.Dr:</Col>
+                  <Col sm={8}>
+                    <span onClick={toggle1}>
+                      <b>
+                        <u>Low Paul</u>
+                      </b>
+                    </span>
+                  </Col>
+                </FormGroup>
+                <FormGroup row className="mb-0">
+                  <Col sm={4}>NRIC:</Col>
+                  <Col sm={8}>
+                    <span>S1587911D</span> <span>Age/Sex:</span>
+                    <span>56/M</span>
+                  </Col>
+                </FormGroup>
+              </Col>
+
+              <Col lg={6}>
+                <FormGroup row className="mb-1">
+                  <Col sm={4}>Reg.Date:</Col>
+                  <Col sm={8}>
+                    <span>
+                      <b>03/10/2020 11:45 AM</b>
+                    </span>
+                  </Col>
+                </FormGroup>
+                <FormGroup row className="mb-1">
+                  <Col sm={4}>Exam Name:</Col>
+                  <Col sm={8}>
+                    <span>XR KNEE</span>
+                  </Col>
+                </FormGroup>
+                <FormGroup row className="mb-1">
+                  <Col sm={4}>Clinic Name:</Col>
+                  <Col sm={8}>
+                    <span onClick={toggle1}>
+                      <b>
+                        <u>Well Medical Clinic</u>
+                      </b>
+                    </span>
+                  </Col>
+                </FormGroup>
+                <FormGroup row className="mb-0">
+                  <Col sm={4}>Acn.No:</Col>
+                  <Col sm={8}>
+                    <span>120022997</span>
+                  </Col>
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="mb-1">
+              <Col lg={2}>Clinical-Diagnosis:</Col>
+              <Col lg={10}>
+                <FormInput type="search" />
+              </Col>
+            </Row>
+            <Row className="ml-0 mr-0">
+              <Editor
+                name="textarea"
+                onEditorChange={(e) => TinyEditor(e)}
+                // onChange={e => setTextarea(e.target.value)}
+                apiKey="jf5v48bc3ntyvt8t90wah94whpzlwxthjgbxrqw2o1ptmcrt"
+                plugins="wordcount"
+                value={area}
+                // value={area}
+                innerRef={register}
+                init={{
+                  height: 450,
+                  menubar: false,
+                  branding: false,
+                  statusbar: false,
+                  width: "100%",
+                  force_br_newlines: true,
+                  force_p_newlines: false,
+                  forced_root_block: "",
+                  // powerpaste_word_import: "prompt",
+                  // paste_webkit_styles: 'color font-size',
+                  // paste_word_valid_elements: "b,strong,i,u,em,h1,h2",
+                  plugins: [
+                    "advlist autolink lists link image charmap print preview anchor",
+                    "searchreplace visualblocks code fullscreen ",
+                    "insertdatetime media table paste code help  textpattern",
+                  ],
+                  toolbar:
+                    "undo redo | formatselect | " +
+                    "fontselect | bold italic underline backcolor| alignleft aligncenter " +
+                    "alignright alignjustify| bullist numlist outdent indent | " +
+                    "removeformat | help" +
+                    "checklist code  table pastetext sourcecode",
+                }}
+              />
+            </Row>
+          </Col>
+
+          <Col lg={4} className="ml-lg-n1">
+            <FormGroup row className="mb-1">
+              <Col sm={4}>Next App. Time:</Col>
+              <Col sm={8}>
+                <span>
+                  <b>03/11/2020 03:30 PM</b>
+                </span>
+              </Col>
+            </FormGroup>
+            <FormGroup row className="mb-1">
+              <Col sm={4}>Radiographer:</Col>
+              <Col sm={8}>
+                <span>
+                  <b>stanlay.rajan</b>
+                </span>
+              </Col>
+            </FormGroup>
+            <FormGroup row className="mb-1">
+              <Col sm={4}>Transcript By:</Col>
+              <Col sm={8}>
+                <span>
+                  <b>laimiasem</b>
+                </span>
+              </Col>
+            </FormGroup>
+            <Row>
+              <Button
+                color="primary"
+                size="sm"
+                style={{ marginLeft: "200px" }}
+                className="mb-1"
+              >
+                Note
+              </Button>
+            </Row>
+            <Row>
+              <Col>
+                <FormGroup row className="mb-1">
+                  <Col lg={4}>ReportOutcome:</Col>
+
+                  <Col lg={8}>
+                    <SelectInput
+                      name="reportoutcome"
+                      id="reportoutcome"
+                      optiondata={reportoutcome}
+                      // value={values.locations || ""}
+                      onChange={(e) => handleChange(e)}
+                    />
+                    {/* <option defaultValue="">None</option>
+                      <option>Abnormal</option>
+                      <option>Normal</option>
+                    </Input> */}
+                  </Col>
+                </FormGroup>
+                <FormGroup row className="mb-1">
+                  <Col lg={4}>Radiologist:</Col>
+                  <Col lg={8}>
+                    <SelectInput
+                      name="radiologist"
+                      id="radiologist"
+                      optiondata={radiologist}
+                      // value={values.locations || ""}
+                      onChange={(e) => handleChange(e)}
+                    />
+                  </Col>
+                </FormGroup>
+                <FormGroup row className="mb-1">
+                  <Col lg={4}>Transcript:</Col>
+
+                  <Col lg={8}>
+                    <SelectInput
+                      name="transcript"
+                      id="transcript"
+                      optiondata={transcript}
+                      // value={values.locations || ""}
+                      onChange={(e) => handleChange(e)}
+                    />
+                  </Col>
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className={styles.table2}>
+              <MyTable className={"table-sm  table-bordered"}>
+                <thead className="bg-primary-09">
+                  <tr>
+                    <th>Template Name</th>
+                  </tr>
+                </thead>
+                <tbody
+                  style={{
+                    color: "black",
+                    backgroundColor: "rgb(248, 220, 184)",
+                  }}
+                >
+                  <tr>
+                    <td>Dr.Elangovan</td>
+                  </tr>
+                  <tr>
+                    <td>Dr.Sameer</td>
+                  </tr>
+                  <tr>
+                    <td>Dr.Vinothini</td>
+                  </tr>
+                  <tr>
+                    <td>Dr.Krishnan</td>
+                  </tr>
+                  <tr>
+                    <td>Dr.Wahith</td>
+                  </tr>
+                  <tr>
+                    <td>Dr Shanthini</td>
+                  </tr>
+                </tbody>
+              </MyTable>
+            </Row>
+            <Row className="mb-1">
+              <Card style={{ width: "50rem" }}>
+                <CardHeader className="bg-primary-04 ">
+                  <Row>
+                    <Col lg={3} md={3}>
+                      <input
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        id="contained-button-file"
+                        multiple
+                        type="file"
+                        onChange={selectFiles}
+                      />
+                      <label htmlFor="contained-button-file">
+                        <MuiButton
+                          variant="contained"
+                          component="span"
+                          name={
+                            <span>
+                              <i className="fa fa-plus"></i> Add
+                            </span>
+                          }
+                        ></MuiButton>
+                      </label>
+                    </Col>
+                    <Col lg={6} md={3} sm={12} style={{ marginBottom: "5px" }}>
+                      {file === 1 && (
+                        <Button
+                          color="primary"
+                          className="p-1 "
+                          onClick={UploadImage}
+                        >
+                          <i class="fa fa-upload"></i> Upload
+                        </Button>
+                      )}
+                    </Col>
+                    <Col lg={2} md={3} sm={12} className="ml-md-n4 ">
+                      {file === 1 && (
+                        <Button
+                          color="primary"
+                          className="p-1"
+                          onClick={ClearAll}
+                        >
+                          <i class="fa fa-close"></i> Clear All
+                        </Button>
+                      )}
+                    </Col>
+                  </Row>
+                </CardHeader>
+                <CardBody style={{ height: "70px", overflowY: "scroll" }}>
+                  {/* {selectedFiles.map((files, index) => (
+                    <Row key={index}>
+                      <Col>{files[0].name}</Col>
+                    </Row>
+                  ))} */}
+                  <For
+                    start={0}
+                    test={(i) => i < selectedFiles.length}
+                    next={(i) => i + 1}
+                  >
+                    {(i) => (
+                      <Row>
+                        <Col lg={8} key={i}>
+                          {selectedFiles[i].name}
+                        </Col>
+                        <Col lg={4}>
+                          <a
+                            name={selectedFiles[i].name}
+                            onClick={() => deleteFiles(selectedFiles[i].name)}
+                          >
+                            <i class="fa fa-trash"></i>Delete
+                          </a>
+                        </Col>
+                      </Row>
+                    )}
+                  </For>
+                </CardBody>
+              </Card>
+            </Row>
+            <Row>
+              <Button color="primary" size="md" onClick={GetTranscriptions}>
+                Transcript Attachment
+              </Button>
+            </Row>
+            <Row className={styles.report}>
+              {transcript11.map((file, index) => (
+                <MyTable className="table-sm m-0 p-0 table-bordered">
+                  <tr key={index}>
+                    <td>
+                      <a
+                        href={"http://localhost:8080/files/" + file.name}
+                        className="text-primary"
+                      >
+                        <u>{file.name}</u>
+                      </a>
+                    </td>
+                  </tr>
+                </MyTable>
+              ))}
+            </Row>
+          </Col>
+        </Row>
+      </CardBody>
+      <CardFooter className=" py-0">
+        {signed === 0 && (
+          <Row>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              In Progress
+            </Button>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              Print/Preview
+            </Button>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              Pending for Signature
+            </Button>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              KIV
+            </Button>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              Format
+            </Button>
+            <Button
+              onClick={signedReport}
+              color="primary"
+              className="p-1 mr-2 my-1"
+            >
+              Sign
+            </Button>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              Sign and print
+            </Button>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              Cancel
+            </Button>
+          </Row>
+        )}
+        {signed === 1 && (
+          <Row>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              Print/Preview
+            </Button>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              eFax:():64760636
+            </Button>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              Email to: admin@tcss.sg
+            </Button>
+            <Button color="primary" className="p-1 mr-2 my-1">
+              Cancel
+            </Button>
+          </Row>
+        )}
+      </CardFooter>
+      {/* START Modal1 */}
+      <Row>
+        <ModalComponent
+          show={modal1}
+          close={toggle1}
+          onClick={toggle1}
+          header={"Customer Information"}
+          component={<CustomerInformation />}
+          style={{ maxWidth: "70%" }}
+        />
+      </Row>
+      {/* END Modal1 */}
+      {/* START Modal3 */}
+      <Row>
+        <ModalComponent
+          show={modal3}
+          close={toggle3}
+          onClick={toggle3}
+          header={"Patient Information"}
+          component={<PatientInformation />}
+          style={{ maxWidth: "600px", width: "70%" }}
+        />
+      </Row>
+      {/* END Modal3 */}
+    </Card>
+  );
+};
+
+export default ExaminationReport;
