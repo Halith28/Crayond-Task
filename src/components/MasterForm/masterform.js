@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
 const MasterForm = () => {
 
     const location = useLocation();
-	const myparam = location.state.params.id;
+	// const myparam = location.state.params.id;
     const classes = useStyles();
     const [imagePreview, setImagePreview] = useState(null);
     const [imageName, setImageName] = useState("");
@@ -165,8 +165,8 @@ const MasterForm = () => {
         </AppBar>
             </div>
             <Grid container  spacing={2} className="d-flex justify-content-center mt-3">
-                <Grid item xs={12} lg={6}>
-                    <Card>
+                <Grid item xs={12} sm={8} md={6} lg={6}>
+                    <Card lg={4}>
                     <CardHeader
                     style={{backgroundColor:"#eeeeee"}}
                         avatar={
@@ -225,9 +225,9 @@ const MasterForm = () => {
                         placeholder="Hey! Try something here"
                     />
                     </Card>
-                    </Grid>
+                    
                     {img===1?
-                    <Grid item xs={12} lg={6}>
+                    <div>
                 {cards.map((posts, index) => (
                 <Card className="mt-5" key={index}>
                         <CardHeader
@@ -273,8 +273,10 @@ const MasterForm = () => {
                             </CardActions>
                         </Card>
                         ))}
-                        </Grid>:<h5 style={{textAlign:"center"}}>
-                            Sorry! No stories are available</h5>}
+                        </div>:<div lg={12}><h5 style={{textAlign:"center"}}>
+                            Sorry! No stories are available</h5>
+                            </div>}
+                            </Grid>
             </Grid>
         </div>
     );
